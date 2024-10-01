@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import sideMenu from 'components/sideMenu.vue'
+import 'primeicons/primeicons.css'
+import SideMenu from './components/SideMenu.vue'
 </script>
 
 <template>
-  <sideMenu />
+  <main>
+    <SideMenu />
+  </main> 
 </template>
 
 <style scoped>
