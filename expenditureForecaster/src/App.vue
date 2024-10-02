@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
 import SideMenu from './components/SideMenu.vue'
+import TopNav from './components/TopNav.vue'
 </script>
 
 <template>
   <main>
+    <TopNav />
     <SideMenu />
   </main> 
 </template>

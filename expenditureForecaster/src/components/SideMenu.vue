@@ -1,34 +1,29 @@
-// icons at https://primevue.org/icons/
+<template>
+  <sidebar-menu :menu="menu" :collapsed="collapsed" :width="width"  @update:collapsed="onToggleCollapse" @item-click="onItemClick"/>
+</template>
 
 <script>
+// icons at https://primevue.org/icons/
   import { SidebarMenu } from 'vue-sidebar-menu'
   import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
-
-  // const props = defineProps({
-  //       collapsed: {
-  //         type: Boolean,
-  //         default: true
-  //       },
-  //       width: {
-  //         type: String,
-  //         default: '400px'
-  //       },
-  // })
     
-  export default {
+  export default {    
     components: {
       SidebarMenu,
     },
     data() {
       return {
+        collapsed: true,
+        width: '240px', 
         menu: [
           {
             header: 'Menu',
             hiddenOnCollapse: true,
+            external: false
           },
           {
             title: 'User Name',
-            icon: 'pi pi-user'
+            icon: 'pi pi-user',
           },
           {
             href: '/',
@@ -36,7 +31,6 @@
             icon: 'pi pi-objects-column',
           },
           {
-            href: '/budget',
             title: 'Budget',
             icon: 'pi pi-wallet',
             child: [
@@ -48,35 +42,38 @@
                 title: 'Family Budget'
               }
             ],
-            }, {
-              href: '/forecaster',
-              title: 'Forecaster',
-              icon: 'pi pi-chart-scatter',
-              child: [
-                {
-                  href: '/forecaster/user',
-                  title: 'Personal Budget Forecast'
-                },
-                {
-                  href: '/forecaster/family',
-                  title: 'Family Budget Forecast'
-                }
-              ]
-            },
-            {
-              href: '/settings',
-              title: 'User Settings',
-              icon: 'pi pi-face-smile'
-            }
-          ],
-        }
+          },
+          {
+            title: 'Forecaster',
+            icon: 'pi pi-chart-scatter',
+            child: [
+              {
+                href: '/forecaster/user',
+                title: 'Personal Budget Forecast'
+              },
+              {
+                href: '/forecaster/family',
+                title: 'Family Budget Forecast'
+              }
+            ]
+          },
+          {
+            href: '/settings',
+            title: 'User Settings',
+            icon: 'pi pi-face-smile'
+          }
+        ],
+      }
+    },
+    methods: {
+      onToggleCollapse() {
+        this.collapsed = !this.collapsed
+        console.log(this.collapsed)
+      },
+      // onItemClick(event, item) {}
     }
   }
 </script>
-
-<template>
-  <sidebar-menu :menu="menu" />
-</template>
 
 <style>
   .v-sidebar-menu {
@@ -111,4 +108,3 @@
     --vsm-icon-width: 35px;
   }
 </style>
-

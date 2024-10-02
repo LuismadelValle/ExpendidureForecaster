@@ -19,6 +19,7 @@
     "axios": "^1.7.7",
     "primeicons": "^7.0.0",
     "vue": "^3.4.29",
+    "vue-router": "^4.4.5",
     "vue-sidebar-menu": "^5.4.2"
   },
   "devDependencies": {
