@@ -24,13 +24,12 @@ def averageExpenditures():
     currentMonth = currentMonth + 1
     expenditureList.append(tempList)
 
-
   averageExpenditure = sum(sum(expenditureList, []))/amountOfMonthsToAverage
-  # df = DataFrame({'Primer Mes': expenditureList[0], 'Segundo Mes': expenditureList[1], 'Promedio': averageExpenditure})
 
-  # df.to_excel('test.xlsx', sheet_name='Testing', index=False) install pandas on monday
+  df = pd.DataFrame(expenditureList)
+  df.to_excel('test.xlsx', sheet_name='Testing', index=False) 
 
-  print(f"Tus gastos promedio son {averageExpenditure}")
+  print(f"Dataframe {df}")
 
 def currencyConversion(amountFirstCoin, currencyDenomination, conversionRate):
   convertedCurrency = int(amountFirstCoin)*float(conversionRate)
@@ -50,4 +49,4 @@ def getBudgetAndCurrencyAskForCurrencyConversion():
   else:
     raise Exception("Responder con y o n")
 
-  
+averageExpenditures()  
