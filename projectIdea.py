@@ -47,6 +47,4 @@ def getBudgetAndCurrencyAskForCurrencyConversion():
   elif convertBudgetToOtherCurrency == 'n':
     print(f"Presupuesto registrado de {budgetAmount} {budgetCurrency}")
   else:
-    raise Exception("Responder con y o n")
-
-averageExpenditures()  
+    raise Exception("Responder con y o n") 
