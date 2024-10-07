@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pandas import DataFrame
 
 def budget(amount, currency):
@@ -17,6 +18,7 @@ def defineExpendituresCategories():
     expenditureCategories.append(category)
   
 def averageExpenditures():
+  global expenditureList
   expenditureList = []
   amountOfMonthsToAverage = int(input("Cuantos meses desea controlar? "))
   totalCategories = len(expenditureCategories)
@@ -33,11 +35,15 @@ def averageExpenditures():
     expenditureList.append(tempList)
 
   averageExpenditure = sum(sum(expenditureList, []))/amountOfMonthsToAverage
+  print(f"Tus gastos promedio para estos ultimos {amountOfMonthsToAverage} es {averageExpenditure}")
 
+def exportData():
+  global df
   df = pd.DataFrame(expenditureList)
-  df.to_excel('test.xlsx', sheet_name='Testing', index=False) 
+  df.to_excel('test.xlsx', sheet_name='Testing', index=False)
 
-  print(f"Dataframe {df}  {averageExpenditure}")
+def predictExpenditures(): #definir modelos a usar 
+  print(f"{df}")
 
 def currencyConversion(amountFirstCoin, currencyDenomination, conversionRate):
   convertedCurrency = int(amountFirstCoin)*float(conversionRate)
