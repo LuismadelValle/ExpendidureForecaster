@@ -24,6 +24,8 @@ from skforecast.plot import set_dark_theme
 from skforecast.preprocessing import series_long_to_dict
 from skforecast.preprocessing import exog_long_to_dict
 
+from IPython.display import display
+
 def budget(amount, currency):
   global budgetForCurrentMonth
   budgetForCurrentMonth = int(amount)
