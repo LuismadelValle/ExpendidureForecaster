@@ -1,6 +1,28 @@
 import pandas as pd
 import numpy as np
 from pandas import DataFrame
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.arima.model import ARIMA
+import matplotlib.pyplot as plt
+
+from tqdm.notebook import tqdm
+from statsmodels.graphics.tsaplots import plot_acf
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import RFECV
+from sklearn.ensemble import  HistGradientBoostingRegressor
+from skforecast.ForecasterAutoregMultiSeries import ForecasterAutoregMultiSeries
+from skforecast.ForecasterAutoreg import ForecasterAutoreg
+from skforecast.model_selection import backtesting_forecaster
+from skforecast.model_selection import bayesian_search_forecaster
+from skforecast.model_selection_multiseries import backtesting_forecaster_multiseries
+from skforecast.model_selection_multiseries import bayesian_search_forecaster_multiseries
+from skforecast.model_selection_multiseries import select_features_multiseries
+from skforecast.plot import set_dark_theme
+from skforecast.preprocessing import series_long_to_dict
+from skforecast.preprocessing import exog_long_to_dict
 
 def budget(amount, currency):
   global budgetForCurrentMonth
@@ -43,7 +65,48 @@ def exportData():
   df.to_excel('test.xlsx', sheet_name='Testing', index=False)
 
 def predictExpenditures(): #definir modelos a usar 
-  print(f"{df}")
+  trainingData = pd.read_csv('trainingData.csv')
+  exog = pd.read_csv('trainingData.csv')
+  trainingData['timestamp'] = pd.to_datetime(trainingData['Date'])
+  exog['timestamp'] = pd.to_datetime(exog['Date'])
+
+  display(trainingData.head())
+  print("")
+  display(exog.head())
+
+  # train = trainingData.iloc[:-12] 
+  # test = trainingData.iloc[-12:]
+
+  # arima_model = ARIMA(train, order=(5,1,0))
+  # arima_result = arima_model.fit()
+
+  # arima_forecast = arima_result.forecast(steps=12)
+
+  # sarimax_model = SARIMAX(train, order=(1,1,1), seasonal_order=(1,1,1,12)) 
+  # sarimax_result = sarimax_model.fit()
+  # sarimax_forecast = sarimax_result.forecast(steps=12)
+
+  # plt.figure(figsize=(10, 5))
+  # plt.plot(train, label='Train')
+  # plt.plot(test, label='Test')
+  # plt.plot(arima_forecast, label='ARIMA Forecast')
+  # plt.plot(sarimax_forecast, label='SARIMAX Forecast')
+  # plt.legend()
+  # plt.title('ARIMA and SARIMAX Forecasting')
+  
+
+  # #MAE
+  # arima_mae = mean_absolute_error(test, arima_forecast)
+  # sarimax_mae = mean_absolute_error(test, sarimax_forecast)
+  # #RMSE
+  # arima_mse = mean_squared_error(test, arima_forecast)
+  # arima_rmse = np.sqrt(arima_mse)
+  # sarimax_mse = mean_squared_error(test, sarimax_forecast)
+  # sarimax_rmse = np.sqrt(sarimax_mse)
+  # print(f"ARIMA MAE: {arima_mae:.2f}, SARIMAX MAE: {sarimax_mae:.2f}" )
+  # print(f"ARIMA RMSE: {arima_rmse:.2f}, SARIMAX RMSE: {sarimax_rmse:.2f}")
+
+  # plt.show()
 
 def currencyConversion(amountFirstCoin, currencyDenomination, conversionRate):
   convertedCurrency = int(amountFirstCoin)*float(conversionRate)
@@ -91,5 +154,4 @@ def familyMembersBudget():
     membersBudget.append(tempList)
     i = i + 1   
   
-defineExpendituresCategories()
-averageExpenditures()
+predictExpenditures()
