@@ -1,76 +1,100 @@
 <template>
-  <sidebar-menu :menu="menu" :width="width" @update:collapsed="onToggleCollapse" @item-click="onItemClick" />
-</template>
-
-<script>
-import { SidebarMenu } from 'vue-sidebar-menu'
-import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
-
-export default {
+	<div>
+	  <TopNav @update-username="updateUsername" />
+	  <sidebar-menu 
+		:menu="menu" 
+		:collapsed="isCollapsed" 
+		:width="width" 
+		@update:collapsed="onToggleCollapse" 
+		@item-click="onItemClick" 
+	  />
+	  <!-- <Dashboard /> -->
+	</div>
+  </template>
+  
+  <script>
+  import { SidebarMenu } from 'vue-sidebar-menu';
+  import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
+  import TopNav from './TopNav.vue'; 
+//   import Dashboard from './Dashboard.vue';
+  
+  export default {
 	components: {
-    	SidebarMenu
-  	},
-    data() {
-      return {
-        menu: [
-          {
-            header: 'User Menu',
-            hiddenOnCollapse: true
-          },
+	  SidebarMenu,
+	  TopNav
+	},
+	data() {
+	  return {
+		isCollapsed: true,
+		username: 'User', 
+		menu: [
 		  {
-			href: '/user',
-			title: 'Username',
-			icon: 'pi pi-user',
+			header: 'User Menu',
+			hiddenOnCollapse: true
 		  },
-          {
-            href: '/',
-            title: 'Dashboard',
-            icon: 'pi pi-objects-column'
-          },
-          {
-            href: '/budget',
-            title: 'Budget',
-            icon: 'pi pi-wallet',
-            child: [
-			{
-                href: '/budget/personalFinances',
-                title: 'Personal Budget',
-              }, {
-                href: '/budget/familyFinances',
-                title: 'Family Budget'
-              }
-            ]
-          },
 		  {
-            title: 'Forecaster',
-            icon: 'pi pi-chart-scatter',
-            child: [
-              {
-                href: '/forecaster/user',
-                title: 'Personal Budget Forecast'
-              },
-              {
-                href: '/forecaster/family',
-                title: 'Family Budget Forecast'
-              }
-            ]
-          },
-          {
-            href: '/settings',
-            title: 'User Settings',
-            icon: 'pi pi-cog'
-          }
-        ]
-      }
-    },
+			title: 'User', 
+			icon: 'pi pi-user'
+		  },
+		  {
+			href: '/',
+			title: 'Dashboard',
+			icon: 'pi pi-objects-column'
+		  },
+		  {
+			title: 'Budget',
+			icon: 'pi pi-wallet',
+			child: [
+			  {
+				href: '/budget/personalFinances',
+				title: 'Personal Budget',
+			  }, 
+			  {
+				href: '/budget/familyFinances',
+				title: 'Family Budget'
+			  }
+			]
+		  },
+		  {
+			title: 'Forecaster',
+			icon: 'pi pi-chart-scatter',
+			child: [
+			  {
+				href: '/forecaster/user',
+				title: 'Personal Budget Forecast'
+			  },
+			  {
+				href: '/forecaster/family',
+				title: 'Family Budget Forecast'
+			  }
+			]
+		  },
+		  {
+			href: '/settings',
+			title: 'User Settings',
+			icon: 'pi pi-cog'
+		  }
+		]
+	  };
+	},
 	methods: {
-		onToggleCollapse(collapsed) {},
-		onItemClick(event, item) {}
+	  onToggleCollapse(collapsed) {
+		this.isCollapsed = collapsed;
+	  },
+	  onItemClick(event, item) {
+		if (item.child && !this.isCollapsed) {
+		  item._showChild = !item._showChild;
+		}
+	  },
+	  updateUsername(newUsername) {
+		this.username = newUsername;
+		this.menu[1].title = newUsername;
+	  }
 	}
-  }  
-</script>
-
-<style scoped>
+  };
+  </script>
+  
+  <style scoped>
   .v-sidebar-menu {
 	--vsm-primary-color: #4285f4;
 	--vsm-base-bg: #2a2a2e;
@@ -102,4 +126,4 @@ export default {
 	--vsm-icon-height: 35px;
 	--vsm-icon-width: 35px;
   }
-</style>
+  </style>
