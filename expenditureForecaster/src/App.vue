@@ -1,16 +1,51 @@
-<script setup lang="ts">
-import 'primeicons/primeicons.css'
-import SideMenu from './components/SideMenu.vue'
-import Dashboard from './components/Dashboard.vue'
-
-</script>
-
 <template>
   <main>
-    <SideMenu />
-    <Dashboard />
+    <v-row>
+      <TopNav @update-username="updateUsername" @dashboard-Visible-After-Login="displayDashboardAfterLogin" @hide-Welcome-Message="hideAfter2s"/>
+    </v-row>
+    <v-row>
+      <v-col class="d-flex flex-column justify-center">
+        <SideMenu />
+      </v-col>
+      <v-col class="d-flex flex-column">
+        <v-row>
+          <h3 v-if="hideAfterAwait">Welcome {{ username }}</h3>
+        </v-row>
+        <v-row>
+          <Dashboard v-if="dashboardVisisbleBeforeLogin"/>
+        </v-row>
+      </v-col>
+    </v-row>
   </main> 
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import 'primeicons/primeicons.css'
+import TopNav from './components/TopNav.vue';
+import SideMenu from './components/SideMenu.vue'
+import Dashboard from './components/Dashboard.vue';
+
+var dashboardVisisbleBeforeLogin = ref(false);
+var hideAfterAwait = ref(false);
+var username = ref('User');
+
+function updateUsername(newUsername:string) {
+  username.value = newUsername;
+};
+
+function displayDashboardAfterLogin(newValue:boolean) {
+  dashboardVisisbleBeforeLogin.value = newValue;
+};
+
+function hideAfter2s(newValue:boolean){
+  hideAfterAwait.value = newValue;
+
+  setTimeout(() => {
+    hideAfterAwait.value = false;
+  }, 2000);
+};
+</script>
 
 <style scoped>
 header {

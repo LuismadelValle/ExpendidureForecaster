@@ -1,46 +1,77 @@
 <template>
-    <LineChart :chartData="data" :options="options" />
-  </template>
-  
-  <script>
-  import { LineChart } from "vue-chart-3";
-  import { Chart, registerables } from "chart.js";
-  
-  Chart.register(...registerables);
-  
-  export default {
-    name: 'lastYearIncome',
-    components: { LineChart },
-    setup() {
-      const data = {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-        datasets: [
-          {
-            label: "# of Votes",
-            data: [12, 19, 3, 5, 2, 3],
-          },
-        ],
-      };
-  
-      const options = {
-        scales: {
-          x: {},
-          y: {},
-        },
-      };
-  
-      return { data, options };
-    },
-  };
-  </script>
-  
-  <!-- <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+  <Chart
+    :size="{ width: 300, height: 220 }"
+    :data="data"
+    :margin="margin"
+    :direction="direction"
+    :axis="axis">
+
+    <template #layers>
+      <Grid strokeDasharray="2,2" />
+      <Line :dataKeys="['name', 'pl']" />
+      <Line :dataKeys="['name', 'avg']" :lineStyle="{ stroke: 'red' }" type="step" />
+    </template>
+
+    <template #widgets>
+      <Tooltip
+        borderColor="#48CAE4"
+        :config="{
+          name: { hide: false },
+          pl: { color: '#0077b6' },
+          avg: { label: 'averange', color: 'red' },
+          inc: { hide: false }
+        }"
+      />
+    </template>
+
+  </Chart>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
+import { Chart, Grid, Line } from 'vue3-charts'
+// import { plByMonth } from '@/data'
+
+export default defineComponent({
+  name: 'LineChart',
+  components: { Chart, Grid, Line },
+  setup() {
+    const data = [
+      { name: 'Jan', pl: 1000, avg: 500, inc: 300 },
+      { name: 'Feb', pl: 2000, avg: 900, inc: 400 },
+      { name: 'Apr', pl: 400, avg: 400, inc: 500 },
+      { name: 'Mar', pl: 3100, avg: 1300, inc: 700 },
+      { name: 'May', pl: 200, avg: 100, inc: 200 },
+      { name: 'Jun', pl: 600, avg: 400, inc: 300 },
+      { name: 'Jul', pl: 500, avg: 90, inc: 100 }
+    ]
+    const direction = ref('horizontal')
+    const margin = ref({
+      left: 0,
+      top: 20,
+      right: 20,
+      bottom: 0
+    })
+
+    const axis = ref({
+      primary: {
+        type: 'band',
+        format: (val: string) => {
+          if (val === 'Feb') {
+            return '😜'
+          }
+          return val
+        }
+      },
+      secondary: {
+        domain: ['dataMin', 'dataMax + 100'],
+        type: 'linear',
+        ticks: 8
+      }
+    })
+
+    return { data, direction, axis }
+    // , margin
   }
-  </style> -->
+})
+</script>

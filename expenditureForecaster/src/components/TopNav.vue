@@ -32,11 +32,12 @@ export default {
     toggleAuth() {
       this.isLoggedIn = !this.isLoggedIn;
       if (this.isLoggedIn) {
-        console.log('User logged in');
         this.$emit('update-username', 'User Logged');
+        this.$emit('dashboard-Visible-After-Login', true);
+        this.$emit('hide-Welcome-Message', true);
       } else {
-        console.log('User logged out');
         this.$emit('update-username', 'User');
+        this.$emit('dashboard-Visible-After-Login', false);
       }
     }
   }

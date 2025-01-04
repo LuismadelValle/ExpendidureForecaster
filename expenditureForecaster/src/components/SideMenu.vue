@@ -1,32 +1,28 @@
 <template>
-	<div>
-	  <TopNav @update-username="updateUsername" />
-	  <sidebar-menu 
+	<sidebar-menu 
 		:menu="menu" 
-		:collapsed="isCollapsed" 
-		:width="width" 
+		:collapsed="isCollapsed"  
 		@update:collapsed="onToggleCollapse" 
 		@item-click="onItemClick" 
-	  />
-	  <!-- <Dashboard /> -->
-	</div>
-  </template>
+	/>
+</template>
   
-  <script>
+<script>
   import { SidebarMenu } from 'vue-sidebar-menu';
   import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
   import TopNav from './TopNav.vue'; 
-//   import Dashboard from './Dashboard.vue';
+  import Dashboard from './Dashboard.vue';
   
   export default {
 	components: {
 	  SidebarMenu,
-	  TopNav
+	  TopNav,
+	  Dashboard
 	},
 	data() {
 	  return {
 		isCollapsed: true,
-		username: 'User', 
+		username: 'User',
 		menu: [
 		  {
 			header: 'User Menu',
@@ -87,14 +83,18 @@
 		}
 	  },
 	  updateUsername(newUsername) {
+		console.log(this.username, newUsername)
 		this.username = newUsername;
 		this.menu[1].title = newUsername;
+	  },
+	  displayMenus(){
+		console.log(`I've been clicked`);
 	  }
 	}
   };
-  </script>
+</script>
   
-  <style scoped>
+<style>
   .v-sidebar-menu {
 	--vsm-primary-color: #4285f4;
 	--vsm-base-bg: #2a2a2e;
@@ -125,5 +125,14 @@
 	--vsm-item-padding: 10px 15px;
 	--vsm-icon-height: 35px;
 	--vsm-icon-width: 35px;
-  }
-  </style>
+ 	}
+	#view {
+	padding-left: 350px;
+	}
+	#view.collapsed {
+		padding-left: 50px;
+	}
+	.sidebar.v-sidebar-menu .vsm--mobile-item {
+		z-index: 0 !important;
+	}
+</style>
