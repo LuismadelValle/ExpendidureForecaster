@@ -3,7 +3,7 @@
     <template #main="{ width }">
       <Chart
         direction="circular"
-        :size="{ width, height: 400 }"
+        :size="{ width: 400, height: 400 }"
         :data="data"
         :margin="{
           left: Math.round((width - 360)/2),

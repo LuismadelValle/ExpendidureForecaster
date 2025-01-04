@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import './input.css'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 const routes = [

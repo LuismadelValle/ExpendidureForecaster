@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import 'primeicons/primeicons.css'
+import 'primeicons/primeicons.css';
 import TopNav from './components/TopNav.vue';
 import SideMenu from './components/SideMenu.vue'
 import Dashboard from './components/Dashboard.vue';
