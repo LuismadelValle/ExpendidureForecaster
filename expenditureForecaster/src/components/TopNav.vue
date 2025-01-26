@@ -35,6 +35,7 @@ export default {
         this.$emit('update-username', 'User Logged');
         this.$emit('dashboard-Visible-After-Login', true);
         this.$emit('hide-Welcome-Message', true);
+        this.$router.push('/dashboard')
       } else {
         this.$emit('update-username', 'User');
         this.$emit('dashboard-Visible-After-Login', false);
