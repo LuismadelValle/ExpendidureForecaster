@@ -1,23 +1,29 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
-// import VueRouter from 'vue-router'
 import App from './App.vue'
 import './input.css'
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 import Dashboard from './components/Dashboard.vue'
+import PersonalBudget from './components/personalBudget.vue'
+import FamilyBudget from './components/familyBudget.vue'
+import PersonalForecaster from './components/personalForecaster.vue'
+import ForecasterFamily from './components/forecasterFamily.vue'
+import Settings from './components/settings.vue'
+
 
 const routes = [
   {path: '/', component: App},
   {path: '/dashboard', component: Dashboard},
-    // path3: '/budget/familyFinances', component3: SideMenu,
-    // path4: '/forecaster/user', component4: SideMenu,
-    // path5: '/forecaster/family', component5: SideMenu,
-    // path6: '/settings', component6: SideMenu,
+  {path: '/budget/personal', component: PersonalBudget},
+  {path: '/budget/familyFinances', component: FamilyBudget},
+  {path: '/forecaster/user', component: PersonalForecaster},
+  {path: '/forecaster/family', component: ForecasterFamily},
+  {path: '/settings', component: Settings},
 ]
 
 const router = createRouter({
-  history: createMemoryHistory('configure-admin'),
+  history: createWebHistory(),
   routes: routes,
 })
 

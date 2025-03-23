@@ -12,7 +12,7 @@
                 :menu="menu" 
                 :collapsed="isCollapsed"  
                 @update:collapsed="onToggleCollapse" 
-                @item-click="onItemClick" 
+                @item-click="onItemClick"
             />
         </div>
 
@@ -36,7 +36,7 @@
 
                 <!-- Dashboard -->
                 <div class="flex-1 mt-20">
-                    <Dashboard v-if="dashboardVisisbleBeforeLogin" />
+                    <router-view></router-view>
                 </div>
             </div>
         </div>
@@ -44,23 +44,32 @@
 </template>
 
 <script>
-  import { SidebarMenu } from 'vue-sidebar-menu';
-  import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
-  import TopNav from './TopNav.vue'; 
-  import Dashboard from './Dashboard.vue';
+import { defineAsyncComponent } from 'vue';
+import { SidebarMenu } from 'vue-sidebar-menu';
+import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
+import TopNav from './TopNav.vue'; 
+
+const Dashboard = defineAsyncComponent(() => 
+	import('./Dashboard.vue')
+);
+
+const PersonalBudget = defineAsyncComponent(() => 
+	import('./personalBudget.vue')
+);
   
   export default {
 	components: {
 	  SidebarMenu,
 	  TopNav,
-	  Dashboard
+	  Dashboard,
+	  PersonalBudget
 	},
 	data() {
 	  return {
 		isCollapsed: true,
 		username: 'User',
 		hideAfterAwait: false,
-		dashboardVisisbleBeforeLogin: false,
+		displayDashboard: false,
 		menu: [
 		  {
 			header: 'User Menu',
@@ -68,7 +77,8 @@
 		  },
 		  {
 			title: 'User', 
-			icon: 'pi pi-user'
+			icon: 'pi pi-user',
+			disabled: true
 		  },
 		  {
 			href: '/dashboard',
@@ -79,9 +89,10 @@
 		  {
 			title: 'Budget',
 			icon: 'pi pi-wallet',
+			href: "#",
 			child: [
 			  {
-				href: '/budget/personalFinances',
+				href: '/budget/personal',
 				title: 'Personal Budget',
 			  }, 
 			  {
@@ -93,6 +104,7 @@
 		  {
 			title: 'Forecaster',
 			icon: 'pi pi-chart-scatter',
+			href: "#",
 			child: [
 			  {
 				href: '/forecaster/user',
@@ -119,9 +131,17 @@
 	  onItemClick(event, item) {
 		if (item.child && !this.isCollapsed) {
             item._showChild = !item._showChild;
-        } else if (item.href) {
-        // Navigate to the item's href if it's a link
-            this.$router.push(item.href);
+        }
+
+		if (item.href && item.href !== "#") {
+            // Check if Vue Router exists and if route is different
+            if (this.$router && this.$route.path !== item.href) {
+                this.$router.push(item.href).catch(err => {
+                    if (err.name !== "NavigationDuplicated") {
+                        console.error(err);
+                    }
+                });
+            }
         }
 	  },
 	  updateUsername(newUsername) {
@@ -136,13 +156,11 @@
 			this.hideAfterAwait = false;
 		}, 2000);
 	  },
-	  displayDashboardAfterLogin(display){
-		this.dashboardVisisbleBeforeLogin = display;
-	  },
-	  displayMenus(){
-		console.log(`I've been clicked`);
+	  displayDashboardAfterLogin(){
+		this.$router.push('/dashboard');
 	  }
-	}
+	},
+
   };
 </script>
   

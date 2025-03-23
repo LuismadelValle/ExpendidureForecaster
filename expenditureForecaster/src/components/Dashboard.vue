@@ -153,7 +153,7 @@ export default defineComponent({
     })
 
     const table = reactive({
-      isLoading: false,
+      isLoading: true,
       columns: [
         {
           label: "ID",

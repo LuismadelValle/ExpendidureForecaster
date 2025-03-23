@@ -5,7 +5,6 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css';
 import MainComponent from './components/mainComponent.vue';
-
 </script>
 
 <style scoped>
