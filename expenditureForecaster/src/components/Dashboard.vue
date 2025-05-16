@@ -83,35 +83,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { Chart, Responsive, Pie, Tooltip, Grid, Line } from 'vue3-charts'
 import TableLite from "vue3-table-lite/ts";
-// import axios from 'axios';
-
-const sampleData1 = (offst, limit) => {
-    offst = offst + 1;
-    let data = [];
-    for (let i = offst; i <= limit; i++) {
-        data.push({
-            id: i,
-            name: "TEST" + i,
-            email: "test" + i + "@example.com",
-        });
-    }
-    return data;
-};
-
-const sampleData2 = (offst, limit) => {
-  let data = [];
-  for (let i = limit; i > offst; i--) {
-    data.push({
-      id: i,
-      name: "TEST" + i,
-      email: "test" + i + "@example.com",
-    });
-  }
-  return data;
-};
+import axios from 'axios';
 
 export default defineComponent({
   name: 'LineChart',
@@ -152,57 +127,87 @@ export default defineComponent({
       }
     })
 
-    const table = reactive({
-      isLoading: true,
-      columns: [
-        {
-          label: "ID",
-          field: "id",
-          width: "3%",
-          sortable: true,
-          isKey: true,
-        },
-        {
-          label: "Name",
-          field: "name",
-          width: "10%",
-          sortable: true,
-        },
-        {
-          label: "Email",
-          field: "email",
-          width: "15%",
-          sortable: true,
-        },
-      ],
+    const table = reactive<{
+      isLoading: boolean,
+      isReSearch: boolean,
+      columns: Array<{ label: string; field: string; sortable: boolean }>,
+
+      rows: any[],
+      totalRecordCount: number,
+      sortable: {
+        order: string,
+        sort: string,
+      },
+    }>({
+      isLoading: false,
+      isReSearch: false,
+      columns: [],
       rows: [],
       totalRecordCount: 0,
       sortable: {
-        order: "id",
+        order: "",
         sort: "asc",
       },
     });
 
-    const doSearch = (offset, limit, order, sort) => {
-      table.isLoading = true;
-      setTimeout(() => {
-        table.isReSearch = offset == undefined ? true : false;
-        if (offset >= 10 || limit >= 20) {
-          limit = 20;
-        }
-        if (sort == "asc") {
-          table.rows = sampleData1(offset, limit);
-        } else {
-          table.rows = sampleData2(offset, limit);
-        }
-        table.totalRecordCount = 20;
-        table.sortable.order = order;
-        table.sortable.sort = sort;
-      }, 600);
-    };
+    let tableData: any[] = []
 
-    // First get data
-    doSearch(0, 10, "id", "asc");
+    const fetchPersonalList = async() => {
+      table.isLoading = true
+      try {
+        const listResponse = await axios.get('http://localhost:8000/dashboard_last_personal_list')
+        tableData = listResponse.data
+
+        const last12Records = tableData.slice(0, 12)
+        table.rows = last12Records
+        table.totalRecordCount = last12Records.length
+
+        if(last12Records.length > 0){
+          table.columns = Object.keys(last12Records[0]).map(key => ({
+            label: key.charAt(0).toUpperCase() + key.slice(1),
+            field: key,
+            sortable: true
+          }))
+          table.sortable = {
+            order: table.columns[0]?.field || '',
+            sort: 'asc'
+          }
+        }
+        doSearch(0, last12Records.length, table.sortable.order, table.sortable.sort)
+      } catch (error) {
+        throw new Error('There was an error')
+      } finally {
+        table.isLoading = false
+      }
+    }
+
+    onMounted(() => {
+      fetchPersonalList()
+    })
+
+    const doSearch = (offset: number, limit: number, order: string, sort: string) => {
+      table.isReSearch = offset == undefined
+      table.isLoading = true
+
+      setTimeout(() => {
+        const sortedData = [...tableData].sort((a, b) => {
+          const aVal = a[order]
+          const bVal = b[order]
+
+          if (aVal < bVal) return sort === 'asc' ? -1 : 1
+          if (aVal > bVal) return sort === 'asc' ? 1 : -1
+          return 0
+        })
+
+        const slicedData = sortedData.slice(offset, offset + limit)
+
+        table.rows = slicedData
+        table.totalRecordCount = tableData.length
+        table.sortable.order = order
+        table.sortable.sort = sort
+        table.isLoading = false
+      }, 600)
+    }
 
     return { data, direction, axis, margin, table, doSearch }
   }, 
