@@ -72,25 +72,19 @@
     <!-- Table -->
     <div class="mt-6 w-full mt-10">
         <h4 class="mb-5">Your last {{ totalData }} expenses</h4>
-        <table-lite
-            :is-loading="table.isLoading"
-            :columns="table.columns"
-            :rows="table.rows"
-            :total="table.totalRecordCount"
-            :sortable="table.sortable"
-        ></table-lite>
+        <v-data-table :items="items" hide-default-footer></v-data-table>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { Chart, Responsive, Pie, Tooltip, Grid, Line } from 'vue3-charts'
-import TableLite from "vue3-table-lite/ts";
+import { VDataTable } from 'vuetify/components/VDataTable'
 import axios from 'axios';
 
 export default defineComponent({
   name: 'LineChart',
-  components: { Chart, Responsive, Pie, Tooltip, Grid, Line, TableLite },
+  components: { Chart, Responsive, Pie, Tooltip, Grid, Line, VDataTable },
   setup() {
     const data = [
       { name: 'Jan', pl: 1000, avg: 500, inc: 300 },
@@ -127,57 +121,15 @@ export default defineComponent({
       }
     })
 
-    const table = reactive<{
-      isLoading: boolean,
-      isReSearch: boolean,
-      columns: Array<{ label: string; field: string; sortable: boolean }>,
-
-      rows: any[],
-      totalRecordCount: number,
-      sortable: {
-        order: string,
-        sort: string,
-      },
-    }>({
-      isLoading: false,
-      isReSearch: false,
-      columns: [],
-      rows: [],
-      totalRecordCount: 0,
-      sortable: {
-        order: "",
-        sort: "asc",
-      },
-    });
-
-    let tableData: any[] = []
+    let items = ref([])
 
     const fetchPersonalList = async() => {
-      table.isLoading = true
       try {
         const listResponse = await axios.get('http://localhost:8000/dashboard_last_personal_list')
-        tableData = listResponse.data
 
-        const last12Records = tableData.slice(0, 12)
-        table.rows = last12Records
-        table.totalRecordCount = last12Records.length
-
-        if(last12Records.length > 0){
-          table.columns = Object.keys(last12Records[0]).map(key => ({
-            label: key.charAt(0).toUpperCase() + key.slice(1),
-            field: key,
-            sortable: true
-          }))
-          table.sortable = {
-            order: table.columns[0]?.field || '',
-            sort: 'asc'
-          }
-        }
-        doSearch(0, last12Records.length, table.sortable.order, table.sortable.sort)
+        items.value = listResponse.data.slice(0, 12)
       } catch (error) {
         throw new Error('There was an error')
-      } finally {
-        table.isLoading = false
       }
     }
 
@@ -185,35 +137,17 @@ export default defineComponent({
       fetchPersonalList()
     })
 
-    const doSearch = (offset: number, limit: number, order: string, sort: string) => {
-      table.isReSearch = offset == undefined
-      table.isLoading = true
-
-      setTimeout(() => {
-        const sortedData = [...tableData].sort((a, b) => {
-          const aVal = a[order]
-          const bVal = b[order]
-
-          if (aVal < bVal) return sort === 'asc' ? -1 : 1
-          if (aVal > bVal) return sort === 'asc' ? 1 : -1
-          return 0
-        })
-
-        const slicedData = sortedData.slice(offset, offset + limit)
-
-        table.rows = slicedData
-        table.totalRecordCount = tableData.length
-        table.sortable.order = order
-        table.sortable.sort = sort
-        table.isLoading = false
-      }, 600)
+    return {
+      data,
+      direction,
+      margin,
+      axis,
+      items
     }
-
-    return { data, direction, axis, margin, table, doSearch }
   }, 
   computed: {
     totalData() {
-        return this.table.rows.length;
+        return this.items.length;
     }
   }
 })
