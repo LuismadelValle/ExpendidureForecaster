@@ -1,5 +1,9 @@
 <template>
-  <MainComponent />
+  <v-app class="d-flex flex-column fill-height">
+    <v-main>
+      <MainComponent />
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">
@@ -8,6 +12,11 @@ import MainComponent from './components/mainComponent.vue';
 </script>
 
 <style scoped>
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
 header {
   line-height: 1.5;
 }

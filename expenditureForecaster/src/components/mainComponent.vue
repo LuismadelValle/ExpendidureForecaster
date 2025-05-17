@@ -1,202 +1,138 @@
 <template>
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div 
-            :class="{
-                'w-64': !isCollapsed,
-                'w-16': isCollapsed
-            }" 
-            class="transition-all duration-300 text-white"
-        >
-            <sidebar-menu 
-                :menu="menu" 
-                :collapsed="isCollapsed"  
-                @update:collapsed="onToggleCollapse" 
-                @item-click="onItemClick"
-            />
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
-            <!-- Top Navigation -->
-            <div class="shadow">
-                <TopNav 
-                    @update-username="updateUsername" 
-                    @dashboard-Visible-After-Login="displayDashboardAfterLogin" 
-                    @hide-Welcome-Message="hideAfterWait" 
-                />
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="flex-1 flex flex-col">
-                <!-- Welcome Message -->
-                <div v-if="hideAfterAwait" class="text-center mt-4">
-                    <h3 class="text-xl font-bold">Welcome {{ username }}</h3>
-                </div>
-
-                <!-- Dashboard -->
-                <div class="flex-1 mt-20">
-                    <router-view></router-view>
-                </div>
-            </div>
-        </div>
-    </div>
+		<v-container fluid>
+			<v-row no-gutters>
+				<TopNav 
+					@update-username="updateUsername" 
+					@dashboard-Visible-After-Login="handleDashboardRedirect"
+					@toggle-drawer="toggleCollapse"
+				/>
+			</v-row>
+			<v-row no-gutters>
+				<v-navigation-drawer :width="drawerWidth" :permanent="true" class="transition-all duration-300" v-model="drawerOpen">
+					<v-list>
+						<v-list-item link title="Dashboard" prepend-icon="mdi-home-analytics" href="/dashboard"></v-list-item>
+						<v-list-group value="Budget">
+							<template v-slot:activator="{ props }">
+								<v-list-item
+									v-bind="props"
+									prepend-icon="mdi-wallet-bifold"
+									title="Budget"
+								></v-list-item>
+							</template>
+							<v-list-item
+								v-for="([title, icon, href], i) in budgets"
+								:key="i"
+								:prepend-icon="icon"
+								:title="title"
+								link
+								:href="href"
+							></v-list-item>
+						</v-list-group>
+						<v-list-group value="Forecaster">
+							<template v-slot:activator="{ props }">
+								<v-list-item
+									v-bind="props"
+									prepend-icon="mdi-wallet-bifold"
+									title="Forecaster"
+								></v-list-item>
+							</template>
+							<v-list-item
+								v-for="([title, icon, href], i) in forecasters"
+								:key="i"
+								:prepend-icon="icon"
+								:title="title"
+								link
+								:href="href"
+							></v-list-item>
+						</v-list-group>
+						<v-list-item link title="User Settings" prepend-icon="mdi-cog" href="/settings"></v-list-item>
+					</v-list>
+				</v-navigation-drawer>
+				<v-col class="fill-height">
+					<RouterView />
+				</v-col>
+			</v-row>
+		</v-container>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
-import { SidebarMenu } from 'vue-sidebar-menu';
-import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
 import TopNav from './TopNav.vue'; 
+import Dashboard from './Dashboard.vue'
+import PersonalBudget from './personalBudget.vue';
+import { RouterView } from 'vue-router';
 
-const Dashboard = defineAsyncComponent(() => 
-	import('./Dashboard.vue')
-);
-
-const PersonalBudget = defineAsyncComponent(() => 
-	import('./personalBudget.vue')
-);
-  
-  export default {
+export default {
 	components: {
-	  SidebarMenu,
 	  TopNav,
 	  Dashboard,
 	  PersonalBudget
 	},
 	data() {
 	  return {
-		isCollapsed: true,
 		username: 'User',
-		hideAfterAwait: false,
-		displayDashboard: false,
-		menu: [
-		  {
-			header: 'User Menu',
-			hiddenOnCollapse: true
-		  },
-		  {
-			title: 'User', 
-			icon: 'pi pi-user',
-			disabled: true
-		  },
-		  {
-			href: '/dashboard',
-			title: 'Dashboard',
-			icon: 'pi pi-objects-column',
-            exact: true
-		  },
-		  {
-			title: 'Budget',
-			icon: 'pi pi-wallet',
-			href: "#",
-			child: [
-			  {
-				href: '/budget/personal',
-				title: 'Personal Budget',
-			  }, 
-			  {
-				href: '/budget/familyFinances',
-				title: 'Family Budget'
-			  }
-			]
-		  },
-		  {
-			title: 'Forecaster',
-			icon: 'pi pi-chart-scatter',
-			href: "#",
-			child: [
-			  {
-				href: '/forecaster/user',
-				title: 'Personal Budget Forecast'
-			  },
-			  {
-				href: '/forecaster/family',
-				title: 'Family Budget Forecast'
-			  }
-			]
-		  },
-		  {
-			href: '/settings',
-			title: 'User Settings',
-			icon: 'pi pi-cog'
-		  }
-		]
+		shouldDisplayDashboard: false,
+		isCollapsed: false,
+    drawerWidth: 200,
+    minDrawerWidth: 100,
+		drawerOpen: true,
+		budgets: [
+			['Personal Budget', 'mdi-card-account-details', '/budget/personal'],
+			['Family Budget', 'mdi-human-male-female-child', '/budget/familyFinances']
+		],
+		forecasters: [
+			['Personal Budget Forecast', 'mdi-chart-timeline-variant-shimmer', '/forecaster/user',],
+			['Family Budget', 'mdi-chart-areaspline','/forecaster/family']
+		],
 	  };
 	},
 	methods: {
-	  onToggleCollapse(collapsed) {
-		this.isCollapsed = collapsed;
-	  },
-	  onItemClick(event, item) {
-		if (item.child && !this.isCollapsed) {
-            item._showChild = !item._showChild;
-        }
-
-		if (item.href && item.href !== "#") {
-            // Check if Vue Router exists and if route is different
-            if (this.$router && this.$route.path !== item.href) {
-                this.$router.push(item.href).catch(err => {
-                    if (err.name !== "NavigationDuplicated") {
-                        console.error(err);
-                    }
-                });
-            }
-        }
-	  },
 	  updateUsername(newUsername) {
-		console.log(this.username, newUsername)
-		this.username = newUsername;
-		this.menu[1].title = newUsername;
+			console.log(this.username, newUsername)
+			this.username = newUsername;
 	  },
-      hideAfterWait(hide){
-		this.hideAfterAwait = hide;
+	  handleDashboardRedirect(visible) {
+			this.shouldDisplayDashboard = visible;
 
-		setTimeout(() => {
-			this.hideAfterAwait = false;
-		}, 2000);
-	  },
-	  displayDashboardAfterLogin(){
-		this.$router.push('/dashboard');
-	  }
+			if (this.shouldDisplayDashboard) {
+			this.$router.push('/dashboard');
+			} else {
+			this.$router.push('/');
+			}
+		},
+		toggleCollapse() {
+			if (!this.drawerOpen) {
+				this.drawerOpen = true;
+				this.isCollapsed = true;
+				this.drawerWidth = 256;
+			} else {
+				this.isCollapsed = !this.isCollapsed;
+				this.drawerWidth = this.isCollapsed ? this.minDrawerWidth : 256;
+			}
+		},
+		handleResize() {
+			const width = window.innerWidth;
+
+			if (width <= 600) {
+				this.drawerOpen = false;
+			} else if (width <= 1024) {
+				this.drawerOpen = true;
+				this.drawerWidth = this.isCollapsed ? this.minDrawerWidth : 120;
+			} else {
+				this.drawerOpen = true;
+				this.drawerWidth = this.isCollapsed ? this.minDrawerWidth : 256;
+			}
+		}
 	},
-
-  };
+	mounted() {
+		window.addEventListener('resize', this.handleResize),
+  	this.handleResize()
+	},
+	beforeUnmount() {
+		window.removeEventListener('resize', this.handleResize);
+	},
+};
 </script>
   
 <style>
-  .v-sidebar-menu {
-	--vsm-primary-color: #4285f4;
-	--vsm-base-bg: #2a2a2e;
-	--vsm-item-color: #fff;
-	--vsm-item-active-color:#FFFFFF;
-	--vsm-item-active-bg:#2a2a2e;
-	--vsm-item-active-line-color: var(--vsm-primary-color);
-	--vsm-item-open-color: #fff;
-	--vsm-item-hover-color:#fff;
-	--vsm-item-open-bg: var(--vsm-primary-color);
-	--vsm-item-hover-bg: rgba(30, 30, 33, 0.5);
-	--vsm-icon-color: var(--vsm-item-color);
-	--vsm-icon-bg: #1e1e21;
-	--vsm-icon-active-color: #fff;
-	--vsm-icon-active-bg:transparent;
-	--vsm-icon-open-color: #fff;
-	--vsm-icon-open-bg:transparent;
-	--vsm-mobile-item-color: #fff;
-	--vsm-mobile-item-bg: var(--vsm-primary-color);
-	--vsm-mobile-icon-color: var(--vsm-mobile-item-color);
-	--vsm-mobile-icon-bg: transparent;
-	--vsm-dropdown-bg: #36363b;
-	--vsm-header-item-color: rgba(255, 255, 255, 0.7);
-	--vsm-toggle-btn-color: #fff;
-	--vsm-toggle-btn-bg: #1e1e21;
-	--vsm-item-font-size: 16px;
-	--vsm-item-line-height: 35px;
-	--vsm-item-padding: 10px 15px;
-	--vsm-icon-height: 35px;
-	--vsm-icon-width: 35px;
- 	}
-	.sidebar.v-sidebar-menu .vsm--mobile-item {
-		z-index: 0 !important;
-	}
+
 </style>

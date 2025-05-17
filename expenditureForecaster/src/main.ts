@@ -17,11 +17,12 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import EmptyView from './components/emptyView.vue'
 
 
 
 const routes = [
-  {path: '/', component: App},
+  {path: '/', component: EmptyView},
   {path: '/dashboard', component: Dashboard},
   {path: '/budget/personal', component: PersonalBudget},
   {path: '/budget/familyFinances', component: FamilyBudget},

@@ -1,10 +1,21 @@
 <template>
-  <div class="auth-button-container">
-    <button @click="toggleAuth">
-      <i :class="'pi ' + currentIcon"></i>
-      {{ buttonText }}
-    </button>
-  </div>
+  <v-app-bar :elevation="2">
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon @click="$emit('toggle-drawer')"></v-app-bar-nav-icon>
+    </template>
+
+    <v-app-bar-title>{{ username }}</v-app-bar-title>
+
+    <template v-slot:append>
+      <v-btn icon="mdi-magnify" />
+
+      <v-btn @click="toggleAuth" class="ml-2" variant="tonal" id="LoginButton">
+        <v-avatar image="https://randomuser.me/api/portraits/men/85.jpg" size="40" v-if="isLoggedIn"></v-avatar>
+        <v-icon start v-if="notLoggedIn">mdi-account</v-icon>
+        {{ buttonText }}
+      </v-btn>
+    </template>
+  </v-app-bar>
 </template>
 
 <script>
@@ -12,61 +23,58 @@ export default {
   name: 'AuthButton',
   data() {
     return {
-      isLoggedIn: false, // Tracks login state
-      icons: {
-        login: 'pi-sign-in',
-        logout: 'pi-sign-out'
-      },
-      username: 'User'
+      isLoggedIn: false,
+      notLoggedIn: true,
+      username: '',
     };
   },
   computed: {
-    currentIcon() {
-      return this.isLoggedIn ? this.icons.logout : this.icons.login;
-    },
     buttonText() {
       return this.isLoggedIn ? 'Log out' : 'Log in';
-    }
+    },
   },
   methods: {
     toggleAuth() {
       this.isLoggedIn = !this.isLoggedIn;
+      this.notLoggedIn = !this.notLoggedIn
+
       if (this.isLoggedIn) {
-        this.$emit('update-username', 'User Logged');
+        this.username = 'User Logged';
+        this.$emit('update-username', this.username);
         this.$emit('dashboard-Visible-After-Login', true);
         this.$emit('hide-Welcome-Message', true);
-        this.$router.push('/dashboard')
+        this.$router.push('/dashboard');
       } else {
-        this.$emit('update-username', 'User');
+        this.username = '';
+        this.$emit('update-username', this.username);
         this.$emit('dashboard-Visible-After-Login', false);
+        this.$router.push('/')
       }
     }
-  }
+  },
 };
 </script>
 
-<style scoped>
-.auth-button-container {
-  position: fixed;
-  top: 5px;
-  right: 5px;
-  z-index: 1000;
+<style>
+.v-app-bar{
+  background-color: #000 !important;
 }
 
-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+.v-app-bar-title {
+  color: #fff;
+}
+
+.v-btn {
+  background-color: #000 !important;
+  color: #fff !important;
   font-size: 14px;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-  background-color: #2a2a2e;
-  color: white;
+  text-transform: none;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
-button:hover {
-  background-color: #4285f4;
+#LoginButton {
+  height: 80px !important;
 }
 </style>
