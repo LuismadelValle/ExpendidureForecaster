@@ -1,58 +1,54 @@
 <template>
-		<v-container fluid>
-			<v-row no-gutters>
-				<TopNav 
-					@update-username="updateUsername" 
-					@dashboard-Visible-After-Login="handleDashboardRedirect"
-					@toggle-drawer="toggleCollapse"
-				/>
-			</v-row>
-			<v-row no-gutters>
-				<v-navigation-drawer :width="drawerWidth" :permanent="true" class="transition-all duration-300" v-model="drawerOpen">
-					<v-list>
-						<v-list-item link title="Dashboard" prepend-icon="mdi-home-analytics" href="/dashboard"></v-list-item>
-						<v-list-group value="Budget">
-							<template v-slot:activator="{ props }">
-								<v-list-item
-									v-bind="props"
-									prepend-icon="mdi-wallet-bifold"
-									title="Budget"
-								></v-list-item>
-							</template>
+	<v-app>
+		<TopNav 
+			@update-username="updateUsername" 
+			@dashboard-Visible-After-Login="handleDashboardRedirect"
+			@toggle-drawer="toggleCollapse"
+		/>
+		<v-navigation-drawer :width="drawerWidth" :permanent="true" class="transition-all duration-300" v-model="drawerOpen">
+			<v-list>
+				<v-list-item link title="Dashboard" prepend-icon="mdi-home-analytics" href="/dashboard"></v-list-item>
+					<v-list-group value="Budget">
+						<template v-slot:activator="{ props }">
 							<v-list-item
-								v-for="([title, icon, href], i) in budgets"
-								:key="i"
-								:prepend-icon="icon"
-								:title="title"
-								link
-								:href="href"
+								v-bind="props"
+								prepend-icon="mdi-wallet-bifold"
+								title="Budget"
 							></v-list-item>
-						</v-list-group>
-						<v-list-group value="Forecaster">
-							<template v-slot:activator="{ props }">
-								<v-list-item
-									v-bind="props"
-									prepend-icon="mdi-wallet-bifold"
-									title="Forecaster"
-								></v-list-item>
-							</template>
+						</template>
+						<v-list-item
+							v-for="([title, icon, href], i) in budgets"
+							:key="i"
+							:prepend-icon="icon"
+							:title="title"
+							link
+							:href="href"
+						></v-list-item>
+					</v-list-group>
+					<v-list-group value="Forecaster">
+						<template v-slot:activator="{ props }">
 							<v-list-item
-								v-for="([title, icon, href], i) in forecasters"
-								:key="i"
-								:prepend-icon="icon"
-								:title="title"
-								link
-								:href="href"
+								v-bind="props"
+								prepend-icon="mdi-wallet-bifold"
+								title="Forecaster"
 							></v-list-item>
-						</v-list-group>
-						<v-list-item link title="User Settings" prepend-icon="mdi-cog" href="/settings"></v-list-item>
-					</v-list>
-				</v-navigation-drawer>
-				<v-col class="fill-height">
-					<RouterView />
-				</v-col>
-			</v-row>
-		</v-container>
+						</template>
+						<v-list-item
+							v-for="([title, icon, href], i) in forecasters"
+							:key="i"
+							:prepend-icon="icon"
+							:title="title"
+							link
+							:href="href"
+						></v-list-item>
+					</v-list-group>
+					<v-list-item link title="User Settings" prepend-icon="mdi-cog" href="/settings"></v-list-item>
+				</v-list>
+			</v-navigation-drawer>
+		<v-main>
+			<RouterView />
+		</v-main>
+	</v-app>
 </template>
 
 <script>

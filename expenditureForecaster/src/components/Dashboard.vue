@@ -1,71 +1,40 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-         <Pie :data="data" :options="options" />
+  <v-container fluid class="fill-height fill-width pa-4">
+    <v-row class="fill-width" no-gutters>
+      <v-col cols="12" md="6">
+        <Pie :data="data" :options="options" />
       </v-col>
-      <v-col></v-col>
+      <v-col cols="12" md="6">
+        <Line :data="data2" :options="options2" />
+      </v-col>
     </v-row>
-    <v-row>
-      <h4 class="mb-5">Your last {{ totalData }} expenses</h4>
-      <v-data-table :items="items" hide-default-footer></v-data-table>
+
+    <v-row class="fill-width">
+      <v-col cols="12">
+        <h4 class="mb-5 mt-10">Your last {{ totalData }} expenses</h4>
+        <v-data-table :items="items" hide-default-footer></v-data-table>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
-// import { Chart, Responsive, Pie, Tooltip, Grid, Line } from 'vue3-charts'
 import { VDataTable } from 'vuetify/components/VDataTable'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Pie } from 'vue-chartjs'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js'
+import { Pie, Line } from 'vue-chartjs'
 import * as chartConfig from './chartConfig'
 import axios from 'axios';
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title)
 
 export default defineComponent({
   name: 'LineChart',
-  components: { Pie, VDataTable },
+  components: { Pie, Line, VDataTable },
   data() {
     return chartConfig
   },
   setup() {
-    const data = [
-      { name: 'Jan', pl: 1000, avg: 500, inc: 300 },
-      { name: 'Feb', pl: 2000, avg: 900, inc: 400 },
-      { name: 'Apr', pl: 400, avg: 400, inc: 500 },
-      { name: 'Mar', pl: 3100, avg: 1300, inc: 700 },
-      { name: 'May', pl: 200, avg: 100, inc: 200 },
-      { name: 'Jun', pl: 600, avg: 400, inc: 300 },
-      { name: 'Jul', pl: 500, avg: 90, inc: 100 }
-    ]
-
-    const direction = ref('horizontal')
-    const margin = ref({
-      left: 0,
-      top: 20,
-      right: 20,
-      bottom: 0
-    })
-
-    const axis = ref({
-      primary: {
-        type: 'band',
-        format: (val: string) => {
-          if (val === 'Feb') {
-            return '😜'
-          }
-          return val
-        }
-      },
-      secondary: {
-        domain: ['dataMin', 'dataMax + 100'],
-        type: 'linear',
-        ticks: 8
-      }
-    })
-
     let items = ref([])
 
     const fetchPersonalList = async() => {
