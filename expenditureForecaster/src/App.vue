@@ -1,5 +1,7 @@
 <template>
-  <MainComponent />
+  <v-app class="d-flex flex-column fill-height" app>
+    <MainComponent />
+  </v-app>
 </template>
 
 <script setup lang="ts">
@@ -8,30 +10,25 @@ import MainComponent from './components/mainComponent.vue';
 </script>
 
 <style scoped>
-header {
-  line-height: 1.5;
+html, body, #app, .v-application {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.v-main {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.v-container {
+  max-width: 100% !important;
+  padding: 0 !important;
 }
 </style>
